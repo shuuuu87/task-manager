@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Progress</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            color: #ffffff;
+            text-align: center;
+            padding: 30px 15px;
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        canvas {
+            max-width: 100%;
+            background-color: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 20px;
+            text-decoration: none;
+            background: #ff6a00;
+            color: white;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        a:hover {
+            background: #ff8800;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media screen and (max-width: 600px) {
+            h2 {
+                font-size: 1.5em;
+            }
+
+            a {
+                width: 90%;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h2><i class="fas fa-chart-line"></i> Your Progress - Past 7 Days</h2>
+    <canvas id="progressChart" width="400" height="200"></canvas>
+
+    <script>
+        const dailyData = {{ daily_counts|tojson }};
+        const labels = Object.keys(dailyData);
+        const data = Object.values(dailyData);
+
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Tasks Completed',
+                    data: data,
+                    borderColor: '#00d4ff',
+                    backgroundColor: 'rgba(0, 212, 255, 0.2)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#00d4ff',
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: "#fff"
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: "#fff"
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: "#fff"
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <a href="{{ url_for('home.homepage') }}"><i class="fas fa-arrow-left"></i> Back to Home</a>
+
+</body>
+</html>

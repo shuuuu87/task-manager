@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Leaderboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: linear-gradient(to right, #83a4d4, #b6fbff);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            animation: fadeIn 0.7s ease-in;
+        }
+
+        h1 {
+            margin-top: 40px;
+            font-size: 32px;
+            color: #2c3e50;
+        }
+
+        .leaderboard {
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 18px;
+            transition: transform 0.2s ease;
+        }
+
+        .entry:hover {
+            transform: scale(1.02);
+        }
+
+        .entry i {
+            margin-right: 10px;
+            color: #2980b9;
+        }
+
+        .entry:last-child {
+            border-bottom: none;
+        }
+
+        .rank {
+            font-weight: bold;
+            width: 30px;
+        }
+
+        .username {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .score {
+            font-weight: bold;
+            color: #16a085;
+        }
+
+        a.back-btn {
+            margin-top: 30px;
+            text-decoration: none;
+            background: #34495e;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        a.back-btn:hover {
+            background: #2c3e50;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .entry {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1><i class="fas fa-trophy"></i> Leaderboard</h1>
+
+    <div class="leaderboard">
+        {% for user in users %}
+            <div class="entry">
+                <div class="rank">#{{ loop.index }}</div>
+                <div class="username"><i class="fas fa-user-circle"></i>{{ user.username }}</div>
+                <div class="score">{{ user.score }}</div>
+            </div>
+        {% else %}
+            <p>No users yet.</p>
+        {% endfor %}
+    </div>
+
+    <a href="{{ url_for('home.homepage') }}" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+
+</body>
+</html>

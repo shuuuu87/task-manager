@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task Manager - Home</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/a2f23500c1.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f0f4ff, #d8e4ff);
+            padding: 2rem;
+        }
+        .task-card {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        .task-card.completed {
+            background-color: #e6ffe6;
+            opacity: 0.85;
+        }
+        .task-card:hover {
+            transform: scale(1.01);
+        }
+        .global-timer {
+            font-size: 2.5rem;
+            color: #555;
+            position: fixed;
+            top: 10px;
+            right: 20px;
+        }
+        .nav-bottom {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+        .btn {
+            margin: 0.25rem;
+        }
+        .logout-btn {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            background: black;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="global-timer" id="global-timer">00:00</div>
+    <a href="{{ url_for('auth.logout') }}" class="btn logout-btn">Logout</a>
+
+    <div class="container">
+        <h2 class="mb-3">Welcome, {{ user.username }} 🎉</h2>
+        <h4>Total Score: <span class="badge bg-primary">{{ user.score }}</span></h4>
+
+        <form method="POST" action="{{ url_for('home.homepage') }}" class="my-4">
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="task_title" placeholder="Enter task title" required>
+                </div>
+                <div class="col-md-4">
+                    <input type="number" class="form-control" name="work_time" placeholder="Work time (mins)" required min="1">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="fas fa-plus-circle"></i> Add
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <h3 class="mt-4">Today's Tasks:</h3>
+
+        {% for task in tasks %}
+            <div class="task-card {% if task.is_completed %}completed{% endif %}">
+                <h5>{{ task.title }} - <small>{{ task.work_time }} min</small></h5>
+
+                {% if not task.is_completed %}
+                    <button class="btn btn-outline-primary" onclick="startTaskAndTimer({{ task.id }}, {{ task.work_time }})">
+                        <i class="fas fa-play"></i> Start
+                    </button>
+
+                    <form id="complete-form-{{ task.id }}" method="POST" action="{{ url_for('home.complete_task', task_id=task.id) }}" style="display:inline;">
+                        <button type="button" class="btn btn-outline-success" onclick="completeTask({{ task.id }})">
+                            <i class="fas fa-check"></i> Complete
+                        </button>
+                    </form>
+
+                    <form method="POST" action="{{ url_for('home.delete_task', task_id=task.id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </form>
+                {% else %}
+                    <span class="text-success fw-bold"><i class="fas fa-check-circle"></i> Completed</span>
+                {% endif %}
+            </div>
+        {% else %}
+            <p class="text-muted">No tasks added yet today.</p>
+        {% endfor %}
+
+        <div class="nav-bottom">
+            <a href="{{ url_for('progress.progress') }}" class="btn btn-outline-dark">📈 Progress</a>
+            <a href="{{ url_for('leaderboard.leaderboard') }}" class="btn btn-outline-dark">🏆 Leaderboard</a>
+        </div>
+    </div>
+
+    <script>
+        let globalTimerInterval = null;
+        let globalSecondsLeft = 0;
+
+        function startTaskAndTimer(taskId, workTimeMinutes, resumeSecondsLeft = null) {
+            if (globalTimerInterval) {
+                clearInterval(globalTimerInterval);
+                globalTimerInterval = null;
+            }
+
+            const endKey = 'endTime-' + taskId;
+            const now = Date.now();
+
+            if (resumeSecondsLeft === null) {
+                const endTime = now + workTimeMinutes * 60000;
+                localStorage.setItem(endKey, endTime);
+                globalSecondsLeft = workTimeMinutes * 60;
+            } else {
+                globalSecondsLeft = resumeSecondsLeft;
+            }
+
+            globalTimerInterval = setInterval(updateGlobalCountdown, 1000);
+            updateGlobalCountdown();
+        }
+
+        function updateGlobalCountdown() {
+            if (globalSecondsLeft <= 0) {
+                clearInterval(globalTimerInterval);
+                globalTimerInterval = null;
+                document.getElementById('global-timer').innerText = "00:00";
+                return;
+            }
+
+            const minutes = Math.floor(globalSecondsLeft / 60);
+            const seconds = globalSecondsLeft % 60;
+            document.getElementById('global-timer').innerText =
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            globalSecondsLeft--;
+        }
+
+        function completeTask(taskId) {
+            localStorage.removeItem('endTime-' + taskId);
+
+            // Disable buttons
+            const taskCard = document.querySelector(`#complete-form-${taskId}`).closest(".task-card");
+            taskCard.classList.add("completed");
+            taskCard.querySelectorAll("button").forEach(btn => btn.disabled = true);
+
+            if (globalTimerInterval) {
+                clearInterval(globalTimerInterval);
+                globalTimerInterval = null;
+                document.getElementById('global-timer').innerText = "00:00";
+            }
+
+            document.getElementById('complete-form-' + taskId).submit();
+        }
+
+        window.onload = function () {
+            {% for task in tasks %}
+                const taskId = {{ task.id|tojson }};
+                const workTime = {{ task.work_time|tojson }};
+                const isCompleted = {{ 'true' if task.is_completed else 'false' }};
+                const endKey = 'endTime-' + taskId;
+
+                if (!isCompleted) {
+                    const endTime = localStorage.getItem(endKey);
+                    if (endTime) {
+                        const now = Date.now();
+                        const secondsLeft = Math.floor((parseInt(endTime) - now) / 1000);
+
+                        if (secondsLeft > 0) {
+                            startTaskAndTimer(taskId, workTime, secondsLeft);
+                        } else {
+                            localStorage.removeItem(endKey);
+                        }
+                    }
+                } else {
+                    localStorage.removeItem(endKey);
+                }
+            {% endfor %}
+        };
+    </script>
+
+</body>
+</html>
