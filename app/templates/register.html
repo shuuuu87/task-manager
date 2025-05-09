@@ -38,7 +38,8 @@
         }
 
         input[type="text"],
-        input[type="password"] {
+        input[type="password"],
+        input[type="email"] {
             width: 100%;
             padding: 12px 15px;
             margin: 10px 0;
@@ -49,7 +50,8 @@
         }
 
         input[type="text"]:focus,
-        input[type="password"]:focus {
+        input[type="password"]:focus,
+        input[type="email"]:focus {
             border-color: #6a82fb;
             box-shadow: 0 0 5px rgba(106, 130, 251, 0.4);
         }
@@ -111,6 +113,11 @@
             <div class="icon-input">
                 <i class="fa fa-user"></i>
                 {{ form.username(class_="form-control", placeholder="Username") }}
+            </div>
+
+            <div class="icon-input">
+                <i class="fa fa-envelope"></i>
+                {{ form.email(class_="form-control", placeholder="Email") }}
             </div>
 
             <div class="icon-input">
