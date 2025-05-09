@@ -1,0 +1,27 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# Environment variables
+.env
+
+# SQLite database
+*.sqlite3
+*.db
+
+# Instance folder (Flask)
+instance/
+
+# VSCode settings
+.vscode/
+
+# Mac and Windows system files
+.DS_Store
+Thumbs.db
