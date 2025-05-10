@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+import os
 
 
 db = SQLAlchemy()
@@ -13,8 +14,8 @@ def create_app():
     
     app.config.from_object('config.Config')
     
-    # Configuration
-    app.config['SECRET_KEY'] = '@#$%^@#$%^$%^&123'
+    # Configuratio
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'defaultfallbackkey')
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///task_manager.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
