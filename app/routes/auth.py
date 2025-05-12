@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, Response
 from app.models import db, User
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user
-from app.forms import RegisterForm, LoginForm  # make sure this is defined in forms.py
+from app.forms import RegisterForm, LoginForm
+from flask_migrate import upgrade  # for running db upgrade
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -58,3 +59,12 @@ def logout():
     session.pop('user_id', None)
     flash('Logged out successfully!', 'success')
     return redirect(url_for('auth.login'))
+
+# TEMP route to run migration upgrade on Render
+@auth_bp.route('/run-db-upgrade')
+def run_db_upgrade():
+    try:
+        upgrade()
+        return Response("Database upgraded successfully!", mimetype='text/plain')
+    except Exception as e:
+        return Response(f"Error: {e}", mimetype='text/plain')
