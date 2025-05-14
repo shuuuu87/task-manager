@@ -11,12 +11,8 @@ login_manager = LoginManager()
 def create_app():
     app = Flask(__name__)
     
+    # Load all config values (SECRET_KEY, DATABASE_URI, etc.) from config.py
     app.config.from_object('config.Config')
-    
-    # Configuration
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'defaultfallbackkey')
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///task_manager.db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Initialize extensions
     db.init_app(app)
@@ -34,7 +30,7 @@ def create_app():
 
     # Create tables if not exist
     with app.app_context():
-        from app import models  # Import all models here to ensure they're registered
+        from app import models
         db.create_all()
 
     # Import and register blueprints
