@@ -47,10 +47,5 @@ def create_app():
     app.register_blueprint(leaderboard_bp)
     #app.register_blueprint(past_tasks_bp)
     #app.register_blueprint(chat_bp)
-    
-    # TEMPORARY: auto-run migrations on startup
-    from flask_migrate import upgrade as migrate_upgrade
-    with app.app_context():
-        migrate_upgrade()
         
     return app
