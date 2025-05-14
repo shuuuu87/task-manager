@@ -149,7 +149,7 @@
             const minutes = Math.floor(globalSecondsLeft / 60);
             const seconds = globalSecondsLeft % 60;
             document.getElementById('global-timer').innerText =
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')};
 
             globalSecondsLeft--;
         }
@@ -158,7 +158,7 @@
             localStorage.removeItem('endTime-' + taskId);
 
             // Disable buttons
-            const taskCard = document.querySelector(`#complete-form-${taskId}`).closest(".task-card");
+            const taskCard = document.querySelector(#complete-form-${taskId}).closest(".task-card");
             taskCard.classList.add("completed");
             taskCard.querySelectorAll("button").forEach(btn => btn.disabled = true);
 

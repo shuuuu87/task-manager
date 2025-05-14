@@ -50,7 +50,7 @@ def complete_task(task_id):
     if task and task.user_id == user_id and not task.is_completed:
         task.is_completed = True
         user = User.query.get(user_id)
-        user.score += 2  # +10 points per completed task
+        user.score += 10  # +10 points per completed task
         db.session.commit()
         flash('Task marked as completed!', 'success')
 
