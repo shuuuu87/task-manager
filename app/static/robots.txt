@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://task-manager-8jxy.onrender.com/sitemap.xml
